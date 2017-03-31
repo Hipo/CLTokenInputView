@@ -35,8 +35,7 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
 
 @implementation CLTokenInputView
 
-- (void)commonInit
-{
+- (void)commonInit {
     self.textField = [[CLBackspaceDetectingTextField alloc] initWithFrame:self.bounds];
     self.textField.backgroundColor = [UIColor clearColor];
     self.textField.keyboardType = UIKeyboardTypeEmailAddress;
@@ -47,6 +46,7 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
     if (![self.textField respondsToSelector:@selector(defaultTextAttributes)]) {
         self.additionalTextFieldYOffset = 1.5;
     }
+    
     [self.textField addTarget:self
                        action:@selector(onTextFieldDidChange:)
              forControlEvents:UIControlEventEditingChanged];
@@ -112,6 +112,7 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
 
     [self.tokens addObject:token];
     CLTokenView *tokenView = [[CLTokenView alloc] initWithToken:token font:self.textField.font];
+    [tokenView setAccessoryImage:self.tokenAccessoryButtonImage];
     if ([self respondsToSelector:@selector(tintColor)]) {
         tokenView.tintColor = self.tintColor;
     }
@@ -311,7 +312,6 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
         if (textField.text.length == 0) {
             CLTokenView *tokenView = self.tokenViews.lastObject;
             if (tokenView) {
-                [self selectTokenView:tokenView animated:YES];
                 [self.textField resignFirstResponder];
             }
         }
@@ -326,8 +326,8 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
     if ([self.delegate respondsToSelector:@selector(tokenInputViewDidBeginEditing:)]) {
         [self.delegate tokenInputViewDidBeginEditing:self];
     }
+    
     self.tokenViews.lastObject.hideUnselectedComma = NO;
-    [self unselectAllTokenViewsAnimated:YES];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
@@ -437,49 +437,25 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
     [self removeTokenAtIndex:index];
 }
 
-- (void)tokenViewDidRequestSelection:(CLTokenView *)tokenView
-{
-    [self selectTokenView:tokenView animated:YES];
-}
-
-
-#pragma mark - Token selection
-
-- (void)selectTokenView:(CLTokenView *)tokenView animated:(BOOL)animated
-{
-    [tokenView setSelected:YES animated:animated];
-    for (CLTokenView *otherTokenView in self.tokenViews) {
-        if (otherTokenView != tokenView) {
-            [otherTokenView setSelected:NO animated:animated];
-        }
+- (void)tokenViewDidReceiveTapOnAccessoryView:(CLTokenView *)tokenView {
+    NSInteger index = [self.tokenViews indexOfObject:tokenView];
+    if (index == NSNotFound) {
+        return;
     }
+    [self removeTokenAtIndex:index];
 }
-
-- (void)unselectAllTokenViewsAnimated:(BOOL)animated
-{
-    for (CLTokenView *tokenView in self.tokenViews) {
-        [tokenView setSelected:NO animated:animated];
-    }
-}
-
 
 #pragma mark - Editing
 
-- (BOOL)isEditing
-{
+- (BOOL)isEditing {
     return self.textField.editing;
 }
 
-
-- (void)beginEditing
-{
+- (void)beginEditing {
     [self.textField becomeFirstResponder];
-    [self unselectAllTokenViewsAnimated:NO];
 }
 
-
-- (void)endEditing
-{
+- (void)endEditing {
     // NOTE: We used to check if .isFirstResponder
     // and then resign first responder, but sometimes
     // we noticed that it would be the first responder,
@@ -554,7 +530,6 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
     }
     [self repositionViews];
 }
-
 
 #pragma mark - Drawing
 

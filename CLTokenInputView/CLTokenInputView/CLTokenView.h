@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 - (void)tokenViewDidRequestDelete:(CLTokenView *)tokenView replaceWithText:(nullable NSString *)replacementText;
-- (void)tokenViewDidRequestSelection:(CLTokenView *)tokenView;
+- (void)tokenViewDidReceiveTapOnAccessoryView:(CLTokenView *)tokenView;
 
 @end
 
@@ -31,9 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
-
-// For iOS 6 compatibility, provide the setter tintColor
-- (void)setTintColor:(nullable UIColor *)tintColor;
+- (void)setAccessoryImage:(UIImage *)image;
 
 @end
 

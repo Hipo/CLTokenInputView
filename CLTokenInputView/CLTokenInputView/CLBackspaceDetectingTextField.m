@@ -12,18 +12,8 @@
 
 @dynamic delegate;
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-    }
-    return self;
-}
-
 // Listen for the deleteBackward method from UIKeyInput protocol
-- (void)deleteBackward
-{
+- (void)deleteBackward {
     if ([self.delegate respondsToSelector:@selector(textFieldDidDeleteBackwards:)]) {
         [self.delegate textFieldDidDeleteBackwards:self];
     }
@@ -46,16 +36,11 @@
         }
     }
 
-    if (![textField.text length] && [[[UIDevice currentDevice] systemVersion] intValue] >= 8) {
-        [self deleteBackward];
-    }
-
     return shouldDelete;
 }
 
 // Override the delegate to ensure our own delegate subclass gets set
-- (void)setDelegate:(NSObject<CLBackspaceDetectingTextFieldDelegate> *)delegate
-{
+- (void)setDelegate:(NSObject<CLBackspaceDetectingTextFieldDelegate> *)delegate {
     [super setDelegate:delegate];
 }
 
